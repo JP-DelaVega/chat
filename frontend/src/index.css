@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@keyframes chatFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes scribbleCursor {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.message-enter {
+  animation: chatFadeIn 0.28s ease-out both;
+}
+
+.typing-cursor {
+  animation: scribbleCursor 0.95s steps(1, end) infinite;
+}
+
+.scribble-text {
+  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+  letter-spacing: 0.01em;
+  text-rendering: geometricPrecision;
+}
+
+body {
+  margin: 0;
+  background: #f7efe2;
+}
+
+* {
+  box-sizing: border-box;
+}

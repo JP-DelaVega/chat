@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+langchain
+langchain_community
+langchain_core
+langchain_google_genai
+langchain_mongodb
+pymongo
+python-dotenv
