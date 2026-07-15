@@ -30,6 +30,7 @@ def build_rag_chain():
         "context": retriever | (lambda docs: "\n\n".join(d.page_content for d in docs)),
         "question": RunnablePassthrough(),
     }
+   
 
     return retrieve | prompt | llm | StrOutputParser()
 

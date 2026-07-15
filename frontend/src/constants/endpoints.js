@@ -1,11 +1,5 @@
 export const ENDPOINTS = [
   {
-    id: "ask",
-    path: "/ask",
-    stream: false,
-    hint: "Single response",
-  },
-  {
     id: "ask-stream",
     path: "/ask/stream",
     stream: true,

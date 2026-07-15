@@ -1,18 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import QuestionForm from "./components/QuestionForm";
 import AnswerCard from "./components/AnswerCard";
-import { ENDPOINTS, PHASES } from "./constants/endpoints";
+import { PHASES } from "./constants/endpoints";
 import { useRagQuery } from "./hooks/useRagQuery";
 
 const createMessageId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 export default function App() {
   const [question, setQuestion] = useState("");
-  const [endpoint, setEndpoint] = useState(ENDPOINTS[0]);
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const assistantMessageIdRef = useRef(null);
   const { phase, answer, errorMsg, isBusy, submit, stop, reset } = useRagQuery();
+  const [showModal, setShowModal] = useState(false);
+  const [animationsEnabled, setAnimationsEnabled] = useState(true);
+
+  const toggleModal = () => {
+    setShowModal((prev) => !prev);
+  }
 
   const handleSubmit = (e) => {
     e?.preventDefault();
@@ -37,7 +43,7 @@ export default function App() {
     assistantMessageIdRef.current = assistantMessage.id;
     setMessages((prev) => [...prev, userMessage, assistantMessage]);
     setQuestion("");
-    submit(trimmedQuestion, endpoint);
+    submit(trimmedQuestion);
   };
 
   useEffect(() => {
@@ -96,18 +102,29 @@ export default function App() {
   }, [phase, answer, errorMsg]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, phase]);
+    if (messages.length === 0) {
+      messagesContainerRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [messages.length]);
+
+  useEffect(() => {
+    if (messages.length === 0) return;
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, answer]);
 
   const handleReset = () => {
     reset();
     setMessages([]);
     assistantMessageIdRef.current = null;
     setQuestion("");
+
+    requestAnimationFrame(() => {
+      messagesContainerRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    });
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden overflow-y-auto bg-[radial-gradient(circle_at_top_left,_rgba(255,177,102,0.22),transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(124,198,255,0.18),transparent_30%),#f7efe2] text-[#2d2218]">
+    <div className="relative h-screen w-full overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(255,177,102,0.22),transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(124,198,255,0.18),transparent_30%),#f7efe2] font-mono text-[#1a2420]">
       <div
         className="pointer-events-none absolute -top-32 -left-20 h-80 w-80 rounded-full opacity-10 blur-3xl bg-retrieve animate-driftA"
         aria-hidden="true"
@@ -117,31 +134,76 @@ export default function App() {
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-5 sm:px-6 lg:px-8">
-        <div className="mb-4 flex flex-wrap items-start justify-between gap-3 rounded-[24px] border-[3px] border-[#ff7b3d] bg-[#fff9ef]/95 p-4 shadow-[6px_6px_0_0_rgba(0,0,0,0.16)] rotate-[-0.8deg]">
+      <div className="relative mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-4 sm:px-6 lg:px-8">
+        <div className="relative mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[3px] border-[#00c2e0] bg-[#f4f6f2] p-4 shadow-[0_0_16px_rgba(0,194,224,0.25)]">
           <div className="min-w-0">
-            <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-[#8b6d46]">
-              <span className="h-1 w-1 rounded-full bg-[#ff7b3d]" />
-              Retrieval-augmented console
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-[#00a3bf]">
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: "#00c2e0", boxShadow: "0 0 6px #00c2e0" }}
+              />
+              Retrieval-Augmented Console
             </div>
-            <h1 className="scribble-text mt-2 text-2xl text-[#2d2218] sm:text-3xl">Ask League Lore.</h1>
+            <h1
+              className="mt-2 text-3xl font-bold uppercase leading-tight tracking-tight sm:text-4xl"
+              style={{ textShadow: "0 0 12px rgba(255,47,160,0.35)" }}
+            >
+              Ask <span style={{ color: "#ff2fa0" }}>Anything Here</span>
+              <span style={{ color: "#00c2e0" }}>.</span>
+            </h1>
           </div>
 
-          <button
-            type="button"
-            onClick={handleReset}
-            className="rounded-full border-[2px] border-[#7cc6ff] bg-[#fffaf0] px-3 py-1.5 text-xs font-semibold text-[#4b3b2a] transition hover:-translate-y-0.5 hover:bg-[#fef2d8]"
-          >
-            Clear chat
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setAnimationsEnabled((prev) => !prev)}
+              className={`rounded-[6px] border-[3px] px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide transition-all duration-150 active:translate-y-0.5 ${
+                animationsEnabled
+                  ? "border-[#ff2d2d] bg-[#fff0f8] text-[#c41212] shadow-[0_0_10px_rgba(255,47,160,0.4)]"
+                  : "border-[#8a8f8c] bg-[#e8eae6] text-[#5a5f5c] shadow-none"
+              }`}
+            >
+              Battle Mode: {animationsEnabled ? "On" : "Off"}
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleModal}
+              className="rounded-[6px] border-[3px] border-[#00c2e0] bg-[#eafcff] px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-[#00a3bf] shadow-[0_0_10px_rgba(0,194,224,0.35)] transition-all duration-150 hover:bg-[#dcf7fb] active:translate-y-0.5 active:shadow-none"
+            >
+              Clear Chat
+            </button>
+          </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-hidden rounded-[32px] border-[3px] border-[#7cc6ff] bg-[#fffaf0]/90 p-3 shadow-[8px_8px_0_0_rgba(0,0,0,0.12)] rotate-[0.5deg] sm:p-4">
-          <div className="flex h-full flex-col">
-            <div className="flex-1 min-h-0 space-y-3 overflow-y-auto px-1 pb-2">
+        <div
+          className="relative z-0 flex-1 min-h-0 overflow-hidden rounded-[28px] border-[10px] bg-black p-3 sm:p-4"
+          style={{
+            borderColor: "#2b2b2e",
+            boxShadow: "inset 0 0 40px rgba(0,0,0,0.8), inset 0 2px 0 rgba(255,255,255,0.06), 0 8px 20px rgba(0,0,0,0.25)",
+          }}
+        >
+          {/* scanline texture on the actual "screen" */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.08]"
+            style={{
+              backgroundImage: "repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 3px)",
+            }}
+            aria-hidden="true"
+          />
+          {/* power LED, bottom-right of the bezel */}
+          <span
+            className="pointer-events-none absolute bottom-[-7px] right-5 h-2 w-2 rounded-full"
+            style={{ backgroundColor: "#00c2e0", boxShadow: "0 0 6px #00c2e0, 0 0 2px #00c2e0" }}
+            aria-hidden="true"
+          />
+
+          <div className="relative flex h-full flex-col">
+            <div ref={messagesContainerRef} className="flex-1 min-h-0 space-y-3 overflow-y-auto px-1 pb-2">
               {messages.length === 0 ? (
-                <div className="scribble-text flex h-full min-h-[280px] items-center justify-center rounded-[22px] border-[2px] border-dashed border-[#ffb46b] bg-[#fff7e8]/80 p-6 text-center text-sm text-[#7a6248]">
-                  Ask a question and your conversation will appear here.
+                <div className="flex h-full min-h-[280px] flex-col items-center justify-center gap-2 rounded-[8px] border-[2px] border-dashed border-[#3a3a3d] bg-[#111113] p-6 text-center text-sm uppercase tracking-wide text-[#6a6f6c]">
+                  <span className="text-2xl" aria-hidden="true">🕹️</span>
+                  No Data — Ask A Question To Begin
                 </div>
               ) : (
                 messages.map((message) => (
@@ -157,16 +219,21 @@ export default function App() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="mt-3 border-t-[2px] border-dashed border-[#ffb46b] pt-3">
+            <div
+              className="relative z-[110] mt-3 overflow-visible rounded-[16px] bg-[#e8e6df] p-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)]"
+            >
               <QuestionForm
                 question={question}
                 onQuestionChange={setQuestion}
-                endpoint={endpoint}
-                onEndpointChange={setEndpoint}
                 isBusy={isBusy}
                 phase={phase}
                 onSubmit={handleSubmit}
                 onStop={stop}
+                handleReset={handleReset}
+                toggleModal={toggleModal}
+                showModal={showModal}
+                animationsEnabled={animationsEnabled}
+                toggleAnimations={() => setAnimationsEnabled((prev) => !prev)}
               />
             </div>
           </div>

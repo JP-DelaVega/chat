@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from app.schemas import QueryRequest, QueryResponse
+from app.schemas import QueryRequest
 from app.rag.chain import rag_chain
 
 app = FastAPI(title="LeagueLore RAG API")
@@ -17,11 +17,6 @@ app.add_middleware(
 @app.get("/")
 def health_check():
     return {"status": "ok"}
-
-@app.post("/ask", response_model=QueryResponse)
-def ask(request: QueryRequest):
-    answer = rag_chain.invoke(request.question)
-    return QueryResponse(answer=answer)
 
 @app.post("/ask/stream")
 def ask_stream(request: QueryRequest):

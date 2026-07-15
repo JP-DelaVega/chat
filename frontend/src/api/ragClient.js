@@ -13,26 +13,6 @@ export class RagApiError extends Error {
 }
 
 /**
- * Calls the non-streaming /ask endpoint.
- * @returns {Promise<string>} the answer text
- */
-export async function askOnce(question, { signal } = {}) {
-  const res = await fetch(`${API_BASE_URL}/ask`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
-    signal,
-  });
-
-  if (!res.ok) {
-    throw new RagApiError(`Request failed (${res.status})`, res.status);
-  }
-
-  const data = await res.json();
-  return data.answer ?? "";
-}
-
-/**
  * Calls the streaming /ask/stream endpoint, invoking onChunk as text
  * arrives. Resolves once the stream completes.
  *
@@ -40,7 +20,10 @@ export async function askOnce(question, { signal } = {}) {
  * not SSE framing. If the backend switches to SSE ("data: ...\n\n"),
  * this parsing would need to change accordingly.
  */
-export async function askStream(question, { signal, onChunk, onFirstChunk } = {}) {
+export async function askStream(
+  question,
+  { signal, onChunk, onFirstChunk } = {},
+) {
   const res = await fetch(`${API_BASE_URL}/ask/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

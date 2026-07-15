@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { askOnce, askStream } from "../api/ragClient";
+import { askStream } from "../api/ragClient";
 import { PHASES } from "../constants/endpoints";
 
 // How long to show the "retrieving" phase before assuming generation has
@@ -28,7 +28,7 @@ export function useRagQuery() {
     abortRef.current?.abort();
   }, []);
 
-  const submit = useCallback(async (question, endpoint) => {
+  const submit = useCallback(async (question) => {
     const trimmed = question.trim();
     if (!trimmed) return;
 
@@ -44,20 +44,14 @@ export function useRagQuery() {
     }, AMBIENT_PHASE_DELAY_MS);
 
     try {
-      if (endpoint.stream) {
-        await askStream(trimmed, {
-          signal: controller.signal,
-          onFirstChunk: () => {
-            clearTimeout(phaseTimerRef.current);
-            setPhase(PHASES.GENERATE);
-          },
-          onChunk: (chunk) => setAnswer((prev) => prev + chunk),
-        });
-      } else {
-        const result = await askOnce(trimmed, { signal: controller.signal });
-        clearTimeout(phaseTimerRef.current);
-        setAnswer(result);
-      }
+      await askStream(trimmed, {
+        signal: controller.signal,
+        onFirstChunk: () => {
+          clearTimeout(phaseTimerRef.current);
+          setPhase(PHASES.GENERATE);
+        },
+        onChunk: (chunk) => setAnswer((prev) => prev + chunk),
+      });
       setPhase(PHASES.DONE);
     } catch (err) {
       clearTimeout(phaseTimerRef.current);
