@@ -214,6 +214,7 @@ export function ComboOverlay({ popups, hitCount, tier, counterVisible, shake, ul
   };
 
   const centerX = rect ? rect.left + rect.width / 2 : 0;
+  const isMutedUltimate = ultimate?.tone === "muted";
 
   return (
     <>
@@ -237,8 +238,8 @@ export function ComboOverlay({ popups, hitCount, tier, counterVisible, shake, ul
                     ...resetStyle,
                     position: "fixed",
                     inset: 0,
-                    background: "#fff",
-                    opacity: ultimate.phase === "in" ? 0.85 : 0,
+                    background: isMutedUltimate ? "#4b5563" : "#fff",
+                    opacity: ultimate.phase === "in" ? (isMutedUltimate ? 0.72 : 0.85) : 0,
                     transition: ultimate.phase === "in" ? "opacity 0.08s ease-out" : "opacity 0.5s ease-out",
                   }}
                 />
@@ -253,19 +254,26 @@ export function ComboOverlay({ popups, hitCount, tier, counterVisible, shake, ul
                     textTransform: "uppercase",
                     letterSpacing: "2px",
                     fontSize: "clamp(32px, 8vw, 96px)",
-                    color: "#D63A3A",
-                    textShadow: [
-                      "4px 4px 0 #000",
-                      "-3px -3px 0 #000",
-                      "3px -3px 0 #000",
-                      "-3px 3px 0 #000",
-                      "0 0 40px rgba(0,0,0,0.6)",
-                    ].join(", "),
+                    color: isMutedUltimate ? "#e5e7eb" : "#D63A3A",
+                    textShadow: isMutedUltimate
+                      ? [
+                        "4px 4px 0 #111827",
+                        "-3px -3px 0 #111827",
+                        "3px -3px 0 #111827",
+                        "-3px 3px 0 #111827",
+                        "0 0 28px rgba(17,24,39,0.6)",
+                      ].join(", ")
+                      : [
+                        "4px 4px 0 #000",
+                        "-3px -3px 0 #000",
+                        "3px -3px 0 #000",
+                        "-3px 3px 0 #000",
+                        "0 0 40px rgba(0,0,0,0.6)",
+                      ].join(", "),
                     whiteSpace: "nowrap",
                     opacity: ultimate.phase === "in" ? 1 : 0,
-                    transform: `translate(-50%, -50%) scale(${ultimate.phase === "in" ? 1 : 1.4}) rotate(${
-                      ultimate.phase === "in" ? "-2deg" : "-2deg"
-                    })`,
+                    transform: `translate(-50%, -50%) scale(${ultimate.phase === "in" ? 1 : 1.4}) rotate(${ultimate.phase === "in" ? "-2deg" : "-2deg"
+                      })`,
                     transition:
                       ultimate.phase === "in"
                         ? "transform 0.35s cubic-bezier(.17,2.2,.3,1), opacity 0.1s ease-out"
@@ -318,9 +326,8 @@ export function ComboOverlay({ popups, hitCount, tier, counterVisible, shake, ul
                   color: p.color,
                   whiteSpace: "nowrap",
                   opacity: p.phase === "out" ? 0 : 1,
-                  transform: `translate(-50%, -50%) rotate(${p.rotate}deg) scale(${
-                    p.phase === "out" ? p.scale * 0.85 : p.scale
-                  })`,
+                  transform: `translate(-50%, -50%) rotate(${p.rotate}deg) scale(${p.phase === "out" ? p.scale * 0.85 : p.scale
+                    })`,
                   transition: "transform 0.16s cubic-bezier(.2,1.6,.4,1), opacity 0.35s ease-out, top 0.9s ease-in",
                 }}
               >
