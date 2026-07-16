@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/clerk-react";
 export default function AnswerCard({ role = "assistant", content = "", isLoading = false, errorMsg = "" }) {
   const isUser = role === "user";
   const isError = Boolean(errorMsg);
@@ -7,8 +8,11 @@ export default function AnswerCard({ role = "assistant", content = "", isLoading
       ? errorMsg
       : content || (isLoading ? "Thinking..." : "No response yet.");
 
+  const { user } = useUser();
+
   const neon = isUser ? "#ff2fa0" : isError ? "#ff4d3d" : "#00c2e0";
-  const label = isUser ? "PLAYER 1" : isError ? "SYSTEM ERROR" : "CPU";
+  const label = isUser ? user.firstName || user.username || "PLAYER" : isError ? "SYSTEM ERROR" : "CPU";
+
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-2`}>
