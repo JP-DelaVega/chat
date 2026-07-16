@@ -1,15 +1,36 @@
 import React from "react";
 import { SignOutButton, useUser } from "@clerk/clerk-react";
+// 1. Import Redux hooks and your database action creator
+import { useDispatch, useSelector } from "react-redux";
+import { setDbNameByLabel } from "../slices/dbSlice";
+
+// DB mapping helper to determine active states
+const DB_MAPPING = {
+  "ABOUT ME": "AboutMe_chunks",
+  "LEAGUE LORE": "LeagueLore_chunks",
+  "STRAVA": "MyStravaActivities_chunks",
+  "RESUME": ""
+};
 
 export default function Sidebar({ isOpen, onClose }) {
   const { user } = useUser();
+  const dispatch = useDispatch();
+
+  // 2. Read the active DB from the Redux store
+  const currentDb = useSelector((state) => state.database.currentDb);
 
   const menuItems = [
-    { label: "ABOUT ME", icon: "👨‍💻", active: true },
-    { label: "LEAUGE LORE", icon: "👾", active: false },
-    { label: "UPGRADES", icon: "⚡", active: false },
-    { label: "MY RESUME", icon: "📄", active: false },
+    { label: "ABOUT ME", icon: "👨‍💻" },
+    { label: "LEAGUE LORE", icon: "👾" }, // Match the spelling from DB_MAPPING
+    { label: "STRAVA", icon: "⚡" },
+    { label: "MY RESUME", icon: "📄" },
   ];
+
+  // 3. Handle changing DB state and closing mobile drawer in one function
+  const handleItemClick = (label) => {
+    dispatch(setDbNameByLabel(label));
+    onClose(); // Auto-closes sidebar drawer on mobile navigation
+  };
 
   return (
     <>
@@ -26,7 +47,6 @@ export default function Sidebar({ isOpen, onClose }) {
         className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r-4 border-double border-cyan-500 bg-black p-6 font-mono text-white select-none transition-transform duration-300 ease-in-out md:static md:translate-x-0 
           ${isOpen ? "translate-x-0 shadow-[0_0_40px_rgba(34,211,238,0.25)]" : "-translate-x-full"}`}
       >
-
 
         {/* Logo */}
         <div className="mb-8 border-b-2 border-dashed border-zinc-800 pb-6 text-center">
@@ -57,23 +77,29 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* Navigation Links */}
         <nav className="flex-1 space-y-3">
-          {menuItems.map((item, idx) => (
-            <button
-              key={idx}
-              onClick={onClose} // Auto-closes sidebar drawer on mobile navigation
-              className={`group flex w-full items-center gap-3 rounded px-3 py-2 text-left text-sm uppercase tracking-wider transition-all duration-150 
-                ${item.active
-                  ? "bg-cyan-950 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.2)] border border-cyan-500"
-                  : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
-                }`}
-            >
-              <span className="opacity-0 transition-opacity group-hover:opacity-100 text-pink-500">
-                ▶
-              </span>
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {menuItems.map((item, idx) => {
+            // 4. Calculate if the item is active based on the global Redux state
+            const isActive = DB_MAPPING[item.label] === currentDb;
+
+            return (
+              <button
+                key={idx}
+                onClick={() => handleItemClick(item.label)} // 5. Dispatch the click handler
+                className={`group flex w-full items-center gap-3 rounded px-3 py-2 text-left text-sm uppercase tracking-wider transition-all duration-150 
+                  ${isActive
+                    ? "bg-cyan-950 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.2)] border border-cyan-500"
+                    : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                  }`}
+              >
+                {/* Visual arrow pointer (shows always on active, or on hover for inactive items) */}
+                <span className={`transition-opacity duration-150 text-pink-500 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                  ▶
+                </span>
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
 
         {/* Sign Out Button */}

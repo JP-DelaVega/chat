@@ -22,12 +22,14 @@ export class RagApiError extends Error {
  */
 export async function askStream(
   question,
+  dbName,
   { signal, onChunk, onFirstChunk } = {},
 ) {
   const res = await fetch(`${API_BASE_URL}/ask/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify({ question, db_name: dbName }),
+
     signal,
   });
 

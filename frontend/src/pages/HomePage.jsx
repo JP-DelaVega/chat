@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import QuestionForm from "../components/QuestionForm";
 import AnswerCard from "../components/AnswerCard";
 import { PHASES } from "../constants/endpoints";
@@ -12,6 +13,9 @@ export default function HomePage() {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const assistantMessageIdRef = useRef(null);
+
+  const currentDb = useSelector((state) => state.database.currentDb);
+
   const { phase, answer, errorMsg, isBusy, submit, stop, reset } = useRagQuery();
   const [showModal, setShowModal] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
@@ -43,7 +47,7 @@ export default function HomePage() {
     assistantMessageIdRef.current = assistantMessage.id;
     setMessages((prev) => [...prev, userMessage, assistantMessage]);
     setQuestion("");
-    submit(trimmedQuestion);
+    submit(trimmedQuestion, currentDb);
   };
 
   useEffect(() => {

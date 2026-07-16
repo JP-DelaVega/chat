@@ -2,22 +2,22 @@ import React from "react";
 import HomePage from "./pages/HomePage";
 import SignInPage from "./pages/SignInPage";
 import Layout from "./components/Layout";
+import { Provider } from 'react-redux';
+import { store } from './store';
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
 export default function App() {
   return (
-    <>
-      {/* If logged out: Show the custom fullscreen login */}
+    <Provider store={store}> {/* 👈 Wrap everything here */}
       <SignedOut>
         <SignInPage />
       </SignedOut>
 
-      {/* If logged in: Show the layout with the Sidebar and Homepage */}
       <SignedIn>
         <Layout>
           <HomePage />
         </Layout>
       </SignedIn>
-    </>
+    </Provider>
   );
 }

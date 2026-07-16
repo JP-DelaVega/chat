@@ -3,8 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from app.schemas import QueryRequest
 from app.rag.chain import rag_chain
+import logging
 
-app = FastAPI(title="LeagueLore RAG API")
+
+logger = logging.getLogger("uvicorn.error")
+app = FastAPI(title="RAG API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,7 +23,14 @@ def health_check():
 
 @app.post("/ask/stream")
 def ask_stream(request: QueryRequest):
+    logger.info(f"Initiating stream for db: '{request.db_name}' | Question: '{request.question}'")
+    
+    chain_input = {
+            "question": request.question,
+            "db_name": request.db_name
+        }
     def generate():
-        for chunk in rag_chain.stream(request.question):
+        
+        for chunk in rag_chain.stream(chain_input):
             yield chunk
     return StreamingResponse(generate(), media_type="text/plain")

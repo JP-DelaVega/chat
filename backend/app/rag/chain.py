@@ -1,6 +1,6 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from app.rag.vectorStore import get_vectorstore
 from app.config import settings
@@ -11,12 +11,23 @@ TEMPLATE = """Answer the question based only on the following context:
 Question: {question}
 """
 
-def build_rag_chain():
-    vectorstore = get_vectorstore()
+def retrieve_context(inputs: dict) -> str:
+    question = inputs["question"]
+    db_name = inputs.get("db_name")  
+    
+    
+    vectorstore = get_vectorstore(db_name)
     retriever = vectorstore.as_retriever(
         search_type="similarity",
         search_kwargs={"k": 3},
     )
+
+    # Fetch documents and merge their contents
+    docs = retriever.invoke(question)
+    return "\n\n".join(d.page_content for d in docs)
+
+def build_rag_chain():
+
 
     prompt = PromptTemplate.from_template(TEMPLATE)
 
@@ -27,8 +38,8 @@ def build_rag_chain():
     )
 
     retrieve = {
-        "context": retriever | (lambda docs: "\n\n".join(d.page_content for d in docs)),
-        "question": RunnablePassthrough(),
+        "context": RunnableLambda(retrieve_context),
+        "question": lambda inputs: inputs["question"],
     }
    
 

@@ -34,6 +34,7 @@ export default function QuestionForm({
   };
 
   const handleSubmit = () => {
+   
     if (!question) return;
     if (animationsEnabled) {
       combo.triggerUltimate("ULTRA COMBO!");
