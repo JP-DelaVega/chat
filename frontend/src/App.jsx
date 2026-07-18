@@ -6,7 +6,7 @@ import SignInPage from "./pages/SignInPage";
 import MainMenu from "./pages/MainMenu";
 import ResumePage from "./pages/ResumePage";
 import HomePage from "./pages/HomePage"
-
+import Layout from "./components/LayOut";
 export default function App() {
   return (
     <>
@@ -21,8 +21,8 @@ export default function App() {
       <SignedIn>
         <Routes>
           <Route path="/" element={<MainMenu />} />
+          <Route path="/homepage" element={<Layout><HomePage /></Layout>} />
 
-          <Route path="/homepage" element={<HomePage />} />
           <Route path="/resume" element={<ResumePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

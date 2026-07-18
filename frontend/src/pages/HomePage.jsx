@@ -4,7 +4,6 @@ import QuestionForm from "../components/QuestionForm";
 import AnswerCard from "../components/AnswerCard";
 import { PHASES } from "../constants/endpoints";
 import { useRagQuery } from "../hooks/useRagQuery";
-import Layout from "../components/Layout";
 import WindowsXpLoading from "../components/WindowsXpLoading"
 import style from "./Homepage.module.css"
 
@@ -140,12 +139,15 @@ export default function HomePage() {
   };
 
   return (
-    <Layout>
+    <>
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
       <div className="relative h-full w-full font-Courier_New',monospace text-black select-none">
+
+        
+        
         <div className="relative mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-4 sm:px-6 lg:px-8">
 
           <div className="relative max-h-137.5 z-0 flex flex-1 min-h-0 flex-col border-4 border-black bg-[#d9d5c7] p-6 rounded-[36px]">
@@ -237,7 +239,7 @@ export default function HomePage() {
 
                   <div className="flex items-center gap-1.5">
                     <span className="text-[8px] font-black text-black/40 uppercase">PWR</span>
-                    <span className={`h-3 w-3 rounded-full border-2 border-black transition-all duration-300 ${isBusy ? "bg-[#d9704f] animate-pulse shadow-[0_0_8px_#d9704f]" : "bg-[#5ebf72] shadow-[0_0_8px_#5ebf72]"
+                    <span className={`h-4 w-4 rounded-full border-2 border-black transition-all duration-300 ${isBusy || restarting ? "bg-[#fc440c] animate-pulse shadow-[0_0_8px_#d9704f]" : "bg-[#5ebf72] shadow-[0_0_8px_#5ebf72]"
                       }`} />
                   </div>
                 </div>
@@ -264,6 +266,6 @@ export default function HomePage() {
 
         </div>
       </div>
-    </Layout >
+    </ >
   );
 }

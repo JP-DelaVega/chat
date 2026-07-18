@@ -68,10 +68,10 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="overflow-hidden">
 
               <p className="truncate text-xs font-black tracking-wider text-[#7eda28] [text-shadow:0_0_4px_rgba(126,218,40,0.6)]">
-                {user.firstName + " " + user?.lastName || "PLAYER"}
+                John Philip Dela Vega{/*user.firstName + " " + user?.lastName || "PLAYER"*/}
               </p>
               <p className="truncate text-[8px] font-black tracking-wider text-[#7eda28] [text-shadow:0_0_4px_rgba(126,218,40,0.6)]">
-                {user?.emailAddress || "jayplought@gmail.com"}
+                jayplought@gmai.com{/**user?.emailAddress || "jayplought@gmail.com" */}
               </p>
             </div>
           </div>
@@ -125,6 +125,46 @@ export default function Sidebar({ isOpen, onClose }) {
           })}
         </nav>
 
+        {/* external link buttons (round, LED on top) */}
+
+        <div className="mt-4 mb-3 flex items-center justify-center gap-8 border border-black/15 bg-[#d1cbb9] p-3 shadow-inner">
+          <a
+            href="https://github.com/JP-DelaVega"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GITHUB"
+            className="group flex flex-col items-center gap-1.5"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-black/15 shadow-[inset_0_0_1px_rgba(0,0,0,0.4)] transition-all duration-150 group-hover:bg-[#5ebf72] group-hover:shadow-[0_0_5px_#5ebf72]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black/40 bg-[#e8e4d8] shadow-[inset_2px_2px_4px_rgba(255,255,255,0.6),inset_-2px_-2px_4px_rgba(0,0,0,0.15)] transition-all group-active:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.4)] group-active:scale-95">
+              <span className="text-xs text-black/60 transition-colors group-hover:text-[#5ebf72]">
+                ◈
+              </span>
+            </div>
+            <span className="text-[8px] font-bold uppercase tracking-widest text-black/60 group-hover:text-black transition-colors">
+              GITHUB
+            </span>
+          </a>
+
+          <a
+            href="https://www.linkedin.com/in/john-philip-dela-vega-29b51820a/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LINKEDIN"
+            className="group flex flex-col items-center gap-1.5"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-black/15 shadow-[inset_0_0_1px_rgba(0,0,0,0.4)] transition-all duration-150 group-hover:bg-[#5ebf72] group-hover:shadow-[0_0_5px_#5ebf72]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black/40 bg-[#e8e4d8] shadow-[inset_2px_2px_4px_rgba(255,255,255,0.6),inset_-2px_-2px_4px_rgba(0,0,0,0.15)] transition-all group-active:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.4)] group-active:scale-95">
+              <span className="text-xs text-black/60 transition-colors group-hover:text-[#5ebf72]">
+                ◆
+              </span>
+            </div>
+            <span className="text-[8px] font-bold uppercase tracking-widest text-black/60 group-hover:text-black transition-colors">
+              LINKEDIN
+            </span>
+          </a>
+        </div>
+
         {/**<button
           onClick={() => {
             navigate("/");
@@ -135,8 +175,10 @@ export default function Sidebar({ isOpen, onClose }) {
           ← Main Menu
         </button> */}
 
+
         {/* power button */}
-        <div className="mt-auto flex flex-col items-center gap-2 border-t border-black/15 pt-6">
+
+        <div className="mt-1.5 flex flex-col items-center gap-2 border-t  border-black/15 pt-6">
           <button
             onClick={() => {
               navigate("/");
