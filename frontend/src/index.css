@@ -21,31 +21,49 @@ h1, h2, h3, .display-text {
   box-sizing: border-box;
 }
 
-/* Themed scrollbar — dark track, neon cyan-to-magenta thumb */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #00c2e0 #14141a;
+
+.crt-screen {
+  position: relative;
+  background: radial-gradient(circle, #0e1115 50%, #050608 100%);
+  overflow: hidden;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* Repeating horizontal scanlines */
+.crt-screen::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  /* Generates a micro horizontal line pattern across the screen */
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 10;
+  pointer-events: none;
 }
 
-::-webkit-scrollbar-track {
-  background: #14141a;
+/* Glass screen reflection glare overlay */
+.crt-screen::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.05) 0%, rgba(0,0,0,0) 70%);
+  z-index: 11;
+  pointer-events: none;
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #00c2e0, #ff2fa0);
-  border-radius: 8px;
-  border: 2px solid #14141a;
+/* Gentle screen refresh flicker to make the phosphor feel alive */
+@keyframes crt-flicker {
+  0% { opacity: 0.985; }
+  50% { opacity: 1; }
+  100% { opacity: 0.99; }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #33d4ee, #ff5cb8);
+.crt-flicker {
+  animation: crt-flicker 0.15s infinite;
 }
 
-::-webkit-scrollbar-corner {
-  background: #14141a;
+/* Green phosphor text glow */
+.phosphor-glow {
+  text-shadow: 0 0 6px rgba(61, 252, 93, 0.65);
 }

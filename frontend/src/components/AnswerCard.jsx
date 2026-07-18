@@ -1,53 +1,46 @@
 import { useUser } from "@clerk/clerk-react";
+
 export default function AnswerCard({ role = "assistant", content = "", isLoading = false, errorMsg = "" }) {
+  const { user } = useUser();
+
   const isUser = role === "user";
   const isError = Boolean(errorMsg);
+
   const displayText = isUser
     ? content
     : isError
       ? errorMsg
-      : content || (isLoading ? "Thinking..." : "No response yet.");
+      : content || (isLoading ? "PROCESSING_INPUT..." : "SYSTEM_READY");
 
-  const { user } = useUser();
 
-  const neon = isUser ? "#ff2fa0" : isError ? "#ff4d3d" : "#00c2e0";
-  const label = isUser ? user.firstName || user.username || "PLAYER" : isError ? "SYSTEM ERROR" : "CPU";
-
+  // Retro Windows Bevel Classes
+  const raisedStyle = "bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-black border-r-black";
+  const sunkenStyle = "bg-[#d9d5c7] border-2 border-t-black border-l-black border-b-white border-r-white";
 
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-2`}>
-      <div
-        className="message-enter relative min-w-0 max-w-[94%] overflow-hidden rounded-[6px] border-[3px] bg-[#f4f6f2] px-4 py-3 sm:max-w-[82%]"
-        style={{
-          borderColor: neon,
-          boxShadow: `0 0 0 1px rgba(0,0,0,0.04), 0 0 14px ${neon}55, inset 0 0 20px ${neon}18`,
-        }}
-      >
-        {/* scanline overlay, like a CRT screen */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage: "repeating-linear-gradient(0deg, #000 0px, #000 1px, transparent 1px, transparent 3px)",
-          }}
-          aria-hidden="true"
-        />
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4`}>
+      <div className={`w-full max-w-[400px] p-1 ${isUser ? sunkenStyle : raisedStyle}`}>
 
-        <div
-          className="relative mb-1.5 flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.25em]"
-          style={{ color: neon }}
-        >
-          <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: neon, boxShadow: `0 0 6px ${neon}` }} />
-          {label}
+        {/* Window Title Bar */}
+        <div className={`flex items-center justify-between px-2 py-0.5 mb-1 ${isUser ? "bg-[#808080]" : "bg-[#000080]"}`}>
+          <span className={`text-[10px] font-bold uppercase tracking-widest ${isUser ? "text-black" : "text-white"}`}>
+            {isUser ? user.firstName : "SYSTEM_OUT"}
+          </span>
         </div>
 
-        <p className="relative break-words overflow-wrap-anywhere font-mono text-[14px] leading-relaxed text-[#1a2420]">
-          {displayText}
-          {isLoading && !isUser && (
-            <span className="ml-1 inline-block animate-pulse" style={{ color: neon }}>
-              ▍
-            </span>
-          )}
-        </p>
+        {/* Content Area */}
+        <div className="p-2 font-mono text-sm text-black">
+          <div className="flex items-start gap-2">
+            <span className="font-bold">{isUser ? ">" : "#"}</span>
+            <div className="break-words leading-snug">
+              {displayText}
+              {isLoading && !isUser && (
+                <span className="ml-1 inline-block h-3 w-[5px] bg-black animate-pulse" />
+              )}
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

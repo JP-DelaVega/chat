@@ -4,7 +4,7 @@ import { PHASES } from "../constants/endpoints";
 export default function SignalLoader({ phase }) {
   return (
     <>
-      <div className="relative mt-3 h-px w-full overflow-hidden rounded-full bg-ink-surface-3">
+      <div className="relative  h-px w-full overflow-hidden rounded-full bg-ink-surface-3">
         {phase === PHASES.RETRIEVE && (
           <span
             className="absolute inset-y-0 left-0 w-1/3 rounded-full animate-scanSweep"
@@ -16,7 +16,7 @@ export default function SignalLoader({ phase }) {
         )}
       </div>
 
-      <div className="mt-3 flex h-5 items-center justify-center gap-2 font-mono text-[11px] tracking-wide">
+      <div className="mt-3 flex h-5 items-center justify-center gap-2 font-mono text-[11px] tracking-wide text-[#c0c0c0]">
         {phase === PHASES.RETRIEVE && (
           <span className="flex items-center gap-2 text-retrieve animate-fadeUp">
             <Search size={12} />

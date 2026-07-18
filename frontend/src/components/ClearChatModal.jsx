@@ -19,9 +19,9 @@ function ClearChatModal({ handleReset, toggleModal }) {
                     </button>
                 </div>
                 <div className={styles.content}>
-                    Are you sure you want to clear the chat history? All messages will be removed.
+                    Are you sure you want to restart? All messages will be removed.
                     <br />
-                    <button className={styles.button} onClick={onClear}>Clear</button>
+                    <button className={styles.button} onClick={onClear}>Restart</button>
                 </div>
             </div>
         </div>
