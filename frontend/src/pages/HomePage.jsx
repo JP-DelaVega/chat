@@ -146,14 +146,24 @@ export default function HomePage() {
       `}</style>
       <div className="relative h-full w-full font-Courier_New',monospace text-black select-none">
 
-        
-        
-        <div className="relative mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-4 sm:px-6 lg:px-8">
+
+
+        <div className="relative mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-4 sm:px-6 lg:px-8 ">
 
           <div className="relative max-h-137.5 z-0 flex flex-1 min-h-0 flex-col border-4 border-black bg-[#d9d5c7] p-6 rounded-[36px]">
-            <div className={`relative flex flex-1 min-h-0 flex-col border-4 border-black p-4 rounded-[20px] overflow-hidden shadow-[inset_3px_3px_10px_rgba(0,0,0,0.15)] transition-colors duration-500 ease-in-out ${isDarkMode ? "bg-[#212121]" : "bg-[#e7e7e7] "}`} >
+            <div className={`relative flex flex-1 min-h-0 flex-col border-10 border-black  rounded-[20px] overflow-hidden shadow-[inset_3px_3px_10px_rgba(0,0,0,0.15)] transition-colors duration-500 ease-in-out ${isDarkMode ? "bg-[#212121]" : "bg-[#e7e7e7] "}`} >
+
+              {/* OLD TV EFFECTs*/}
+              <div className="pointer-events-none absolute inset-0 z-10 opacity-20 bg-[repeating-linear-gradient(to_bottom,rgba(0,0,0,0.12)_0px,rgba(0,0,0,0.12)_1px,transparent_2px,transparent_4px)]" />
+              <div className="pointer-events-none absolute inset-0 z-10 opacity-15 bg-[linear-gradient(90deg,rgba(255,0,0,0.08)_0%,transparent_30%,transparent_70%,rgba(0,150,255,0.08)_100%)]" />
+              <div className="pointer-events-none absolute -top-10 left-1/2 z-20 h-40 w-[150%] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.45),rgba(255,255,255,0)_70%)] blur-xl opacity-40" />
+              <div className="pointer-events-none absolute inset-0 z-20 shadow-[inset_0_0_80px_rgba(255,255,255,0.08)]" />
+              <div className="pointer-events-none absolute inset-0 z-20 shadow-[inset_0_0_120px_rgba(0,0,0,0.45),inset_0_0_20px_rgba(0,0,0,0.25)]" />
+              <div className="pointer-events-none absolute inset-0 z-20 rounded-2xl border border-white/10 shadow-[inset_0_0_50px_rgba(255,255,255,0.05)]" />
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-20 animate-[pulse_3s_linear_infinite] bg-linear-to-b from-white/10 via-white/5 to-transparent blur-md" />
               <div className="absolute inset-0 pointer-events-none opacity-30 z-10 bg" />
-              <div className="relative z-20 flex flex-1 min-h-0 flex-col">
+
+              <div className="relative z-20 flex flex-1 min-h-0 flex-col p-0.5">
 
                 <div ref={messagesContainerRef} className="flex-1 min-h-0 space-y-4 overflow-y-auto no-scrollbar px-1 pb-2">
                   {restarting ? (
@@ -162,7 +172,7 @@ export default function HomePage() {
                     </div>
                   ) : messages.length === 0 ? (
                     // 2. Empty State
-                    <div className={`flex h-full flex-col justify-center p-8 text-left transition-colors duration-500 ease-in-out ${isDarkMode ? "bg-[#212121]" : "bg-[#e7e7e7] "}`}>
+                    <div className={`flex h-full flex-col justify-center p-8 text-left `}>
                       <div className="w-full max-w-sm space-y-2">
                         <p className={`text-sm font-black transition-colors duration-500 ease-in-out ${!isDarkMode ? "text-black/50" : "text-white/50"}`}>
                           &gt; SYSTEM: RAG-CHASSIS ONLINE
@@ -229,10 +239,27 @@ export default function HomePage() {
 
                 <div className="flex items-center gap-4">
                   <div className="flex gap-1.5">
-                    <div className="w-5 h-5 rounded-full border-2 border-black bg-[#f5efe0] relative shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2)]">
+                    {/* Busy Knob */}
+                    <div
+                      className={`relative h-5 w-5 rounded-full border-2 border-black bg-[#f5efe0] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2)] ${isBusy ? "animate-spin" : ""
+                        }`}
+                      style={{
+                        animationDuration: "1s",
+                        animationTimingFunction: "linear",
+                      }}
+                    >
                       <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-0.5 h-1.5 bg-black" />
                     </div>
-                    <div className="w-5 h-5 rounded-full border-2 border-black bg-[#f5efe0] relative shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2)]">
+
+                    {/* Restart Knob */}
+                    <div
+                      className={`relative h-5 w-5 rounded-full border-2 border-black bg-[#f5efe0] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2)] ${restarting ? "animate-spin" : ""
+                        }`}
+                      style={{
+                        animationDuration: "1s",
+                        animationTimingFunction: "linear",
+                      }}
+                    >
                       <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-0.5 h-1.5 bg-black" />
                     </div>
                   </div>
