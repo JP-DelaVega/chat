@@ -25,7 +25,8 @@ export default function AnswerCard({ role = "assistant", content = "", isLoading
       <div className={`w-full max-w-100 p-1 ${isUser ? sunkenStyle : raisedStyle}`}>
 
         {/* Window Title Bar */}
-        <div className={`flex items-center justify-between px-2 py-0.5 mb-1 ${isUser ? "bg-[#808080]" : "bg-[#000080]"}`}>
+        <div className={`flex items-center justify-between px-2 py-0.5 mb-1 ${isUser ? "bg-[#808080]" : isError ? "bg-[#800000]" : "bg-[#000080]"
+          }`}>
           <span className={`text-[10px] font-bold uppercase tracking-widest ${isUser ? "text-black" : "text-white"}`}>
             {isUser ? user.firstName : "SYSTEM_OUT"}
           </span>

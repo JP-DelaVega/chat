@@ -16,6 +16,7 @@ export default function QuestionForm({
   showModal,
   animationsEnabled,
   toggleAnimations,
+  restarting
 }) {
   const combo = useComboEffect({ enabled: animationsEnabled });
 
@@ -75,7 +76,7 @@ export default function QuestionForm({
               value={question}
               onChange={(e) => onQuestionChange(e.target.value)}
               onKeyDown={handleKeyDown}
-              disabled={isBusy}
+              disabled={isBusy || restarting}
               placeholder="ASK_SOMETHING_ABOUT_YOUR_DOCUMENTS..."
               className="w-full resize-none bg-white p-3 font-mono text-sm text-black 
              border-2 border-t-black border-l-black border-b-white border-r-white 
@@ -97,7 +98,7 @@ export default function QuestionForm({
                 <button
                   className={styles.keycap}
                   type="submit"
-                  disabled={!question.trim()}
+                  disabled={!question.trim() || restarting}
                 >
                   <aside className={styles.letter}>Send</aside>
                 </button>

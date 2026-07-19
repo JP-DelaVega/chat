@@ -290,6 +290,7 @@ export default function HomePage() {
               showModal={showModal}
               animationsEnabled={animationsEnabled}
               toggleAnimations={() => setAnimationsEnabled((prev) => !prev)}
+              restarting={restarting}
             />
           </div>
 
