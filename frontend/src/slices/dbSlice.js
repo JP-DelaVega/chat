@@ -4,7 +4,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const DB_MAPPING = {
   "ABOUT ME": "AboutMe_chunks",
   "LEAGUE LORE": "LeagueLore_chunks",
-  "STRAVA": "MyStravaActivities_chunks",
+  STRAVA: "MyStravaActivities_chunks",
+  "MATCH HISTORY": "lol_stats",
 };
 
 const initialState = {

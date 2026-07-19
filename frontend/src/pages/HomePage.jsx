@@ -57,7 +57,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!assistantMessageIdRef.current) return;
-
+    console.log("PHASE:", phase, "ANSWER TAIL:", answer.slice(-50));
     if (phase === PHASES.GENERATE && answer) {
       setMessages((prev) =>
         prev.map((message) =>
@@ -70,9 +70,10 @@ export default function HomePage() {
     }
 
     if (phase === PHASES.DONE && answer) {
+      const targetId = assistantMessageIdRef.current;
       setMessages((prev) =>
         prev.map((message) =>
-          message.id === assistantMessageIdRef.current
+          message.id === targetId
             ? { ...message, content: answer, isLoading: false, errorMsg: "" }
             : message
         )
@@ -82,9 +83,10 @@ export default function HomePage() {
     }
 
     if (phase === PHASES.ERROR) {
+      const targetId = assistantMessageIdRef.current;
       setMessages((prev) =>
         prev.map((message) =>
-          message.id === assistantMessageIdRef.current
+          message.id === targetId
             ? {
               ...message,
               content: errorMsg || "Something went wrong.",
@@ -99,9 +101,10 @@ export default function HomePage() {
     }
 
     if (phase === PHASES.STOPPED) {
+      const targetId = assistantMessageIdRef.current;
       setMessages((prev) =>
         prev.map((message) =>
-          message.id === assistantMessageIdRef.current
+          message.id === targetId
             ? { ...message, content: "Stopped.", isLoading: false, errorMsg: "Stopped." }
             : message
         )
@@ -181,8 +184,7 @@ export default function HomePage() {
                           &gt; SOURCE LOADED: {currentDb || "NONE SELECTED"}
                         </p>
                         <p className={`text-sm font-black transition-colors duration-500 ease-in-out ${!isDarkMode ? "text-black" : "text-white"}`}>
-                          &gt; AWAITING INPUT
-                          <span className="animate-pulse">▍</span>
+                          &gt; {question ? question : `AWAITING INPUT`}<span className="animate-pulse">▍</span>
                         </p>
                       </div>
                     </div>

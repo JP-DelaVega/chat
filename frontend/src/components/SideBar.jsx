@@ -6,8 +6,9 @@ import { setDbNameByLabel } from "../slices/dbSlice";
 
 const DB_MAPPING = {
   "ABOUT ME": "AboutMe_chunks",
-  "LEAGUE LORE": "LeagueLore_chunks",
   "STRAVA": "MyStravaActivities_chunks",
+  "LEAGUE LORE": "LeagueLore_chunks",
+  "MATCH HISTORY": "lol_stats"
 };
 
 function Screw({ className = "" }) {
@@ -26,9 +27,10 @@ export default function Sidebar({ isOpen, onClose }) {
   const currentDb = useSelector((state) => state.database.currentDb);
 
   const menuItems = [
-    { label: "ABOUT ME", track: "01" },
-    { label: "LEAGUE LORE", track: "02" },
-    { label: "STRAVA", track: "03" },
+    { label: "ABOUT ME", track: "RAG" },
+    { label: "STRAVA", track: "RAG" },
+    { label: "LEAGUE LORE", track: "RAG" },
+    { label: "MATCH HISTORY", track: "lol_stats" },
   ];
 
   const handleItemClick = (label) => {
@@ -59,7 +61,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* vents */}
         <div className="absolute right-6 top-8 flex flex-col gap-1">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-[2px] w-6 rounded-full bg-black/15" />
+            <div key={i} className="h-0.5 w-6 rounded-full bg-black/15" />
           ))}
         </div>
 
@@ -88,7 +90,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
             return (
               <button
-                key={item.track}
+                key={item.label}
                 onClick={() => handleItemClick(item.label)}
                 className={`flex w-full items-center gap-3 border-2 px-3 py-2.5 text-left transition-all duration-150
                   ${isActive
@@ -108,7 +110,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
                 <div className="min-w-0 flex-1">
                   <div className="text-[9px] uppercase tracking-widest text-black/40">
-                    Bay {item.track}
+                    {item.track}
                   </div>
                   <div className="truncate text-sm font-bold uppercase tracking-wide text-black/80">
                     {item.label}

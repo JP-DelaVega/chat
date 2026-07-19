@@ -50,10 +50,8 @@ export async function askStream(
 
     if (!receivedFirst) {
       receivedFirst = true;
-      console.log("FIRST CHUNK RECEIVED");
       onFirstChunk?.();
     }
-    console.log("CHUNK:", chunk);
     onChunk?.(chunk);
   }
 }
