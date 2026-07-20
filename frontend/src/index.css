@@ -3,10 +3,7 @@
 
 body {
   margin: 0;
-  background-color: #0d0d11;
-  background-image: 
-    radial-gradient(circle, rgba(255, 23, 68, 0.08) 0%, transparent 70%),
-    repeating-linear-gradient(45deg, #14141a, #14141a 10px, #0d0d11 10px, #0d0d11 20px);
+  background-color: #212121;
   color: #f3f4f6;
   overflow-x: hidden;
   font-family: 'JetBrains Mono', monospace;

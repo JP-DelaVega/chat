@@ -16,7 +16,7 @@ export default function MainMenu() {
   ];
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-[#212121] p-6 [font-family:'Courier_New',monospace]">
+    <div className="flex h-screen w-full items-center justify-center p-6 [font-family:'Courier_New',monospace]">
 
       {/* Container simulating a classic Windows "Window" or Menu Bar */}
       <div className="w-full max-w-sm border-2 border-black/30 shadow-[3px_0_10px_rgba(0,0,0,0.2) bg-[#d9d5c7] p-3 ">

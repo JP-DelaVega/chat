@@ -1,6 +1,7 @@
 import os
 import requests
 from dotenv import load_dotenv
+from app.cache.cache import ttl_cache
 
 load_dotenv()
 
@@ -15,7 +16,7 @@ def get_puuid(game_name: str, tag_line: str, region2: str = "asia") -> str:
     resp.raise_for_status()
     return resp.json()["puuid"]
 
-
+@ttl_cache(seconds=120)
 def get_recent_matches(
     game_name: str = None,
     tag_line: str = None,

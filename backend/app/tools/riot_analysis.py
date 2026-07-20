@@ -18,15 +18,19 @@ def analyze_lol_query(question: str) -> str:
 
     prompt = f"""You are analyzing a League of Legends player's recent match history.
 
-Match data (most recent matches, one per line):
-{raw_matches}
+                Match data (most recent matches, one per line):
+                {raw_matches}
 
-Answer the following question using only the data above. Show your reasoning
-briefly if it involves calculation (e.g. computing an average or finding a max),
-then give a clear final answer.
+                Answer the following question using only the data above.
 
-Question: {question}
-"""
+                Respond in plain, natural sentences only — do not use markdown formatting such as
+                bold (**text**), headers, bullet points, or numbered lists. Do not label sections
+                like "Reasoning:" or "Final Answer:". If the question involves a calculation,
+                briefly explain how you got the number as part of a normal sentence, then state
+                the answer clearly, all in flowing prose.
+
+                Question: {question}
+                """
 
     response = llm.invoke(prompt)
     return response.content

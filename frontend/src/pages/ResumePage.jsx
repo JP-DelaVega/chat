@@ -29,7 +29,7 @@ export default function ResumePage() {
     };
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col items-center justify-center bg-[#212121] p-6 [font-family:'Courier_New',monospace] text-zinc-100 select-none">
+        <div className="relative flex min-h-screen w-full flex-col items-center justify-center p-6 [font-family:'Courier_New',monospace] text-zinc-100 select-none">
 
             <Link
                 to="/"
