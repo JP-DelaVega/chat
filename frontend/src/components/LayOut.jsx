@@ -13,7 +13,7 @@ export default function Layout({ children }) {
 
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="border-4 border-2 border-t-white border-l-white border-b-black border-r-black bg-[#c0c0c0] px-3 py-1.5 text-xs font-black uppercase tracking-widest text-xs font-bold uppercase tracking-widest text-black active:border-t-black active:border-l-black active:border-b-white active:border-r-white"
+          className="border-4  border-t-white border-l-white border-b-black border-r-black bg-[#c0c0c0] px-3 py-1.5  text-xs font-bold uppercase tracking-widest text-black active:border-t-black active:border-l-black active:border-b-white active:border-r-white"
         >
           [ MENU ]
         </button>

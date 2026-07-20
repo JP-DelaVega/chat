@@ -1,5 +1,4 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 import styles from "./ClearChatModal.module.css";
 
 function ClearChatModal({ handleReset, toggleModal }) {
@@ -8,8 +7,7 @@ function ClearChatModal({ handleReset, toggleModal }) {
         toggleModal();
     };
 
-    // 1. Build your modal layout
-    const modalContent = (
+    return (
         <div className={styles.overlay}>
             <div className={styles.card}>
                 <div className={styles.head}>
@@ -26,9 +24,6 @@ function ClearChatModal({ handleReset, toggleModal }) {
             </div>
         </div>
     );
-
-    // 2. Teleport this layout out of the nested components and directly into document.body
-    return createPortal(modalContent, document.body);
 }
 
 export default ClearChatModal;

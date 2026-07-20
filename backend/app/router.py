@@ -1,33 +1,19 @@
 # app/router.py
 from app.rag.chain import rag_chain
-from app.tools.riot_tool import get_recent_matches
+from app.tools.riot_analysis import llm  # reuse the same LLM client
 
-LOL_KEYWORDS = [
-    # General references
-    "match", "matches", "game", "games", "lol", "league of legends",
-    "league", "summoner", "riot", "account", "recent games", "recent matches",
+CLASSIFY_PROMPT = """Classify the following user question into exactly one category.
+Respond with ONLY the category name, nothing else.
 
-    # Stats / performance
-    "kda", "k/d/a", "kills", "deaths", "assists", "kill", "death", "assist",
-    "cs", "creep score", "farm", "gold", "damage", "vision score", "wards",
-    "win rate", "winrate", "win", "loss", "wins", "losses", "streak",
-    "double kill", "triple kill", "quadra", "penta", "pentakill",
+Categories:
+- "lol_stats": the question is about League of Legends match history, stats, KDA, champions, ranks, wins/losses, or performance.
 
-    # Champion / role related
-    "champion", "champions", "champ", "main", "otp", "build", "runes",
-    "role", "roles", "lane", "laner", "top lane", "jungle", "jungler",
-    "mid lane", "midlaner", "bot lane", "adc", "support", "sup",
+Question: {question}
 
-    # Ranked / progression
-    "rank", "ranked", "elo", "lp", "league points", "tier", "division",
-    "iron", "bronze", "silver", "gold rank", "platinum", "emerald",
-    "diamond", "master", "grandmaster", "challenger", "promo", "promos",
-
-    # Session / time-based
-    "today", "this week", "last game", "last match", "how many games",
-    "how did i do", "performance", "stats", "statistics", "profile",
-]
+Category:"""
 
 def is_lol_query(question: str) -> bool:
-    q = question.lower()
-    return any(kw in q for kw in LOL_KEYWORDS)
+    prompt = CLASSIFY_PROMPT.format(question=question)
+    response = llm.invoke(prompt)
+    category = response.content.strip().lower()
+    return category == "lol_stats"

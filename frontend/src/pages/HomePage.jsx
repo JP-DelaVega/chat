@@ -5,6 +5,8 @@ import AnswerCard from "../components/AnswerCard";
 import { PHASES } from "../constants/endpoints";
 import { useRagQuery } from "../hooks/useRagQuery";
 import WindowsXpLoading from "../components/WindowsXpLoading"
+import { useComboEffect, ComboOverlay } from "../hooks/useComboEffect";
+import ClearChatModal from "../components/ClearChatModal";
 import style from "./Homepage.module.css"
 
 const createMessageId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -21,6 +23,7 @@ export default function HomePage() {
   const { phase, answer, errorMsg, isBusy, submit, stop, reset } = useRagQuery();
   const [showModal, setShowModal] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(false);
+  const combo = useComboEffect({ enabled: animationsEnabled });
 
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [restarting, setRestarting] = useState(false)
@@ -151,58 +154,92 @@ export default function HomePage() {
 
         <div className="relative mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-4 sm:px-6 lg:px-8 ">
 
-          <div className="relative max-h-137.5 z-0 flex flex-1 min-h-0 flex-col border-4 border-black bg-[#d9d5c7] p-6 rounded-[36px]">
-            
-            <div className={`relative flex flex-1 min-h-0 flex-col border-10 border-black  rounded-[20px] overflow-hidden shadow-[inset_3px_3px_10px_rgba(0,0,0,0.15)] transition-colors duration-500 ease-in-out ${isDarkMode ? "bg-[#212121]" : "bg-[#e7e7e7] "}`} >
-              
+          <div className="relative max-h-137.5 z-0 flex flex-1 min-h-0 flex-col border-4 border-[#C7C7C7] bg-[#d9d5c7] p-6 rounded-[10px]">
+
+            <div
+              className={`relative flex flex-1 min-h-0 flex-col border-10 rounded-[5px] overflow-hidden shadow-[inset_3px_3px_10px_rgba(0,0,0,0.15)] transition-colors duration-500 ease-in-out ${animationsEnabled ? "border-[#1700ff]" : "border-black"
+                } ${isDarkMode ? "bg-[#212121]" : "bg-[#e7e7e7] "}`}
+            >
               {/* OLD TV EFFECTs*/}
               <div className="pointer-events-none absolute inset-0 z-10 opacity-20 bg-[repeating-linear-gradient(to_bottom,rgba(0,0,0,0.12)_0px,rgba(0,0,0,0.12)_1px,transparent_2px,transparent_4px)]" />
               <div className="pointer-events-none absolute inset-0 z-10 opacity-15 bg-[linear-gradient(90deg,rgba(255,0,0,0.08)_0%,transparent_30%,transparent_70%,rgba(0,150,255,0.08)_100%)]" />
               <div className="pointer-events-none absolute -top-10 left-1/2 z-20 h-40 w-[150%] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.45),rgba(255,255,255,0)_70%)] blur-xl opacity-40" />
               <div className="pointer-events-none absolute inset-0 z-20 shadow-[inset_0_0_80px_rgba(255,255,255,0.08)]" />
               <div className="pointer-events-none absolute inset-0 z-20 shadow-[inset_0_0_120px_rgba(0,0,0,0.45),inset_0_0_20px_rgba(0,0,0,0.25)]" />
-              <div className="pointer-events-none absolute inset-0 z-20 rounded-2xl border border-white/10 shadow-[inset_0_0_50px_rgba(255,255,255,0.05)]" />
+              <div className="pointer-events-none absolute inset-0 z-20 rounded-[5px] border border-white/10 shadow-[inset_0_0_50px_rgba(255,255,255,0.05)]" />
               <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-20 animate-[pulse_3s_linear_infinite] bg-linear-to-b from-white/10 via-white/5 to-transparent blur-md" />
               <div className="absolute inset-0 pointer-events-none opacity-30 z-10 bg" />
-              
 
-              <div className="relative z-20 flex flex-1 min-h-0 flex-col p-0.5">
+              {showModal && (
+                <ClearChatModal handleReset={handleReset} toggleModal={toggleModal} />
+              )}
 
-                <div ref={messagesContainerRef} className="flex-1 min-h-0 space-y-4 overflow-y-auto no-scrollbar px-1 pb-2">
-                  {restarting ? (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <WindowsXpLoading />
-                    </div>
-                  ) : messages.length === 0 ? (
-                    // 2. Empty State
-                    <div className={`flex h-full flex-col justify-center p-8 text-left `}>
-                      <div className="w-full max-w-sm space-y-2">
-                        <p className={`text-sm font-black transition-colors duration-500 ease-in-out ${!isDarkMode ? "text-black/50" : "text-white/50"}`}>
-                          &gt; SYSTEM: RAG-CHASSIS ONLINE
-                        </p>
-                        <p className={`text-sm font-black transition-colors duration-500 ease-in-out ${!isDarkMode ? "text-black/70" : "text-white/70"}`}>
-                          &gt; SOURCE LOADED: {currentDb || "NONE SELECTED"}
-                        </p>
-                        <p className={`text-sm font-black transition-colors duration-500 ease-in-out ${!isDarkMode ? "text-black" : "text-white"}`}>
-                          &gt; {question ? question : `AWAITING INPUT`}<span className="animate-pulse">▍</span>
-                        </p>
+              <ComboOverlay {...combo} enabled={animationsEnabled} className="flex flex-1 min-h-0 flex-col">
+                <div className="relative z-20 flex flex-1 min-h-0 flex-col p-0.5">
+
+                  <div ref={messagesContainerRef} className="flex-1 min-h-0 space-y-4 overflow-y-auto no-scrollbar px-1 pb-2">
+                    {restarting ? (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <WindowsXpLoading />
                       </div>
-                    </div>
-                  ) : (
-                    // 3. Message List
-                    messages.map((message) => (
-                      <AnswerCard
-                        key={message.id}
-                        role={message.role}
-                        content={message.content}
-                        isLoading={message.isLoading}
-                        errorMsg={message.errorMsg}
-                      />
-                    ))
-                  )}
-                  <div ref={messagesEndRef} />
+                    ) : messages.length === 0 ? (
+                      // 2. Empty State
+                      <div className={`flex h-full flex-col justify-center p-8 text-left `}>
+                        <div className="w-full max-w-sm space-y-2">
+                          <p className={`text-sm font-black flex items-center gap-1.5 transition-colors duration-500 ease-in-out ${!isDarkMode ? "text-black/50" : "text-white/50"}`}>
+                            <span className="shrink-0 inline-flex items-center justify-center h-5 w-5">&gt;</span>
+                            <span>SYSTEM: RAG-CHASSIS ONLINE</span>
+                          </p>
+                          <p className={`text-sm font-black flex items-center gap-1.5 transition-colors duration-500 ease-in-out ${!isDarkMode ? "text-black/70" : "text-white/70"}`}>
+                            <span className="shrink-0 inline-flex items-center justify-center h-5 w-5">&gt;</span>
+                            <span>SOURCE LOADED: {currentDb || "NONE SELECTED"}</span>
+                          </p>
+
+                          <p className={`text-sm font-black flex items-center gap-1.5 transition-colors duration-500 ease-in-out ${!isDarkMode ? "text-black" : "text-white"}`}>
+                            <span className="shrink-0 relative inline-flex items-center justify-center h-5 w-5">
+                              <span
+                                className="absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out"
+                                style={{
+                                  opacity: animationsEnabled ? 0 : 1,
+                                  transform: animationsEnabled ? "scale(0.5)" : "scale(1)",
+                                }}
+                              >
+                                &gt;
+                              </span>
+                              <img
+                                src="/pacman.gif"
+                                alt="pacman"
+                                className="absolute inset-0 w-5 h-5 object-contain transition-all duration-300 ease-in-out transform hover:scale-150"
+                                style={{
+                                  opacity: animationsEnabled ? 1 : 0,
+                                  transform: animationsEnabled ? "scale(1)" : "scale(0.5)",
+                                }}
+                              />
+                            </span>
+                            <span>
+                              {question ? question : `AWAITING INPUT`}
+                              <span className="animate-pulse">▍</span>
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      // 3. Message List
+                      messages.map((message) => (
+                        <AnswerCard
+                          key={message.id}
+                          role={message.role}
+                          content={message.content}
+                          isLoading={message.isLoading}
+                          errorMsg={message.errorMsg}
+                          animationsEnabled={animationsEnabled}
+                        />
+                      ))
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
                 </div>
-              </div>
+              </ComboOverlay>
             </div>
 
             <div className="mt-4 flex flex-wrap items-center justify-between border-t-2 border-black/10 pt-3 select-none gap-4">
@@ -291,6 +328,7 @@ export default function HomePage() {
               animationsEnabled={animationsEnabled}
               toggleAnimations={() => setAnimationsEnabled((prev) => !prev)}
               restarting={restarting}
+              combo={combo}
             />
           </div>
 

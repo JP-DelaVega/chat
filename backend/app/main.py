@@ -66,18 +66,3 @@ def ask_stream(request: QueryRequest):
             yield f"Error processing RAG query: {str(e)}"
 
     return StreamingResponse(generate_rag(), media_type="text/plain")
-
-    # Otherwise: normal RAG chain, streamed as before
-    chain_input = {
-        "question": request.question,
-        "db_name": request.db_name
-    }
-
-    def generate_rag():
-        try:
-            for chunk in rag_chain.stream(chain_input):
-                yield chunk
-        except Exception as e:
-            yield f"Error processing RAG query: {str(e)}"
-
-    return StreamingResponse(generate_rag(), media_type="text/plain")

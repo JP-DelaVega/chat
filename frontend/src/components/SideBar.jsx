@@ -48,7 +48,7 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-[#d9d5c7] p-6 [font-family:'Courier_New',monospace] text-black select-none transition-transform duration-300 ease-in-out md:static md:translate-x-0
+        className={`fixed inset-y-0 left-0 z-50 flex w-75 flex-col bg-[#d9d5c7] p-6 [font-family:'Courier_New',monospace] text-black select-none transition-transform duration-300 ease-in-out md:static md:translate-x-0
           border-2 border-black/30 shadow-[3px_0_10px_rgba(0,0,0,0.2)]
           ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >

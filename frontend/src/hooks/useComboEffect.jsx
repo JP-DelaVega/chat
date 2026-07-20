@@ -1,18 +1,15 @@
-import { useState, useRef, useCallback, useLayoutEffect } from "react";
-import { createPortal } from "react-dom";
+import { useState, useRef, useCallback } from "react";
 
 const WORDS = ["HIT!", "COMBO!", "CRITICAL!", "RAPID!", "FIERCE!", "SMASH!", "MEGA!", "ULTRA!"];
 const SPECIALS = ["HADOUKEN!", "SHORYUKEN!", "TATSUMAKI!", "PERFECT!"];
 
-// vivid standalone colors — these are floating text now (no background box
-// behind them), so each needs to be visible on its own against any page bg
 const TIERS = [
-  { min: 0, color: "#1D7FD1", baseSize: 18, scale: 1.0 },
-  { min: 4, color: "#0F9E6E", baseSize: 22, scale: 1.15 },
-  { min: 8, color: "#D19A1D", baseSize: 26, scale: 1.3 },
-  { min: 14, color: "#E0602E", baseSize: 30, scale: 1.5 },
-  { min: 20, color: "#D63A3A", baseSize: 34, scale: 1.75 },
-  { min: 28, color: "#C23B9C", baseSize: 40, scale: 2.0 },
+  { min: 0,  color: "#4DF0FF", glow: "#00C2FF", baseSize: 18, scale: 1.0 },
+  { min: 4,  color: "#4DFFB8", glow: "#00FF88", baseSize: 22, scale: 1.15 },
+  { min: 8,  color: "#FFE94D", glow: "#FFC400", baseSize: 26, scale: 1.3 },
+  { min: 14, color: "#FF9E4D", glow: "#FF6A00", baseSize: 30, scale: 1.5 },
+  { min: 20, color: "#FF4D6A", glow: "#FF0044", baseSize: 34, scale: 1.75 },
+  { min: 28, color: "#FF4DE8", glow: "#E600FF", baseSize: 40, scale: 2.0 },
 ];
 
 function tierFor(count) {
@@ -23,8 +20,8 @@ function tierFor(count) {
 
 let popupId = 0;
 
-const SPAWN_THROTTLE_MS = 320; // min gap between visible popups
-const POPUP_LIFETIME_MS = 1300; // how long a popup stays visible
+const SPAWN_THROTTLE_MS = 320;
+const POPUP_LIFETIME_MS = 1300;
 
 const HIGH_SCORE_KEY = "comboHighScore";
 
@@ -35,24 +32,20 @@ function loadHighScore() {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-/**
- * Hook that drives the combo effect. Call registerKeystroke() from your
- * existing onChange handler — it doesn't touch your state/value at all,
- * it just tracks typing speed and produces popups/shake/counter to render.
- */
 export function useComboEffect({ fastThresholdMs = 600 } = {}) {
   const [popups, setPopups] = useState([]);
   const [hitCount, setHitCount] = useState(0);
   const [tier, setTier] = useState(TIERS[0]);
   const [counterVisible, setCounterVisible] = useState(false);
   const [shake, setShake] = useState({ x: 0, y: 0 });
-  const [ultimate, setUltimate] = useState(null); // { text, phase, tone } | null
+  const [ultimate, setUltimate] = useState(null);
   const [highScore, setHighScore] = useState(loadHighScore);
 
   const lastTimeRef = useRef(0);
   const lastSpawnRef = useRef(0);
   const resetTimerRef = useRef(null);
   const shakeTimerRef = useRef(null);
+  const ultimateTimerRef = useRef(null);
 
   const triggerShake = useCallback((intensity) => {
     const x = Math.random() * intensity - intensity / 2;
@@ -62,14 +55,6 @@ export function useComboEffect({ fastThresholdMs = 600 } = {}) {
     shakeTimerRef.current = setTimeout(() => setShake({ x: 0, y: 0 }), 70);
   }, []);
 
-  const ultimateTimerRef = useRef(null);
-
-  /**
-   * Call this from your submit/action button to fire a full-screen
-   * "ultimate move" activation: flash, giant title text, and a hard shake.
-   * tone controls the color: "hype" (red, default) or "muted" (gray, for
-   * game-over/stop states where you don't want it to feel celebratory).
-   */
   const triggerUltimate = useCallback((text = "ULTRA COMBO!", tone = "hype") => {
     clearTimeout(ultimateTimerRef.current);
     setUltimate({ text, phase: "in", tone });
@@ -84,11 +69,6 @@ export function useComboEffect({ fastThresholdMs = 600 } = {}) {
     }, 1100);
   }, [triggerShake]);
 
-  /**
-   * Convenience wrapper for a "game over" style reset — same big banner
-   * treatment as triggerUltimate but muted/gray instead of red, so it
-   * doesn't read as a celebratory hit.
-   */
   const triggerGameOver = useCallback((text = "GAME OVER") => {
     triggerUltimate(text, "muted");
   }, [triggerUltimate]);
@@ -96,13 +76,13 @@ export function useComboEffect({ fastThresholdMs = 600 } = {}) {
   const spawnPopup = useCallback((text, currentTier, isSpecial) => {
     const id = popupId++;
     const rotate = Math.random() * 20 - 10;
-    const xOffset = Math.random() * 160 - 80;
-    const yOffset = Math.random() * 50 - 25;
+    const xOffset = Math.random() * 30 - 15; // % offset now, not px
+    const yOffset = Math.random() * 8 - 4;   // % offset now, not px
     const fontSize = isSpecial ? currentTier.baseSize * 1.3 : currentTier.baseSize;
 
     setPopups((prev) => [
       ...prev,
-      { id, text, color: currentTier.color, bg: currentTier.bg, rotate, xOffset, yOffset, fontSize, scale: currentTier.scale, phase: "in" },
+      { id, text, color: currentTier.color, glow: currentTier.glow, rotate, xOffset, yOffset, fontSize, scale: currentTier.scale, isSpecial, phase: "in" },
     ]);
 
     setTimeout(() => {
@@ -174,169 +154,165 @@ export function useComboEffect({ fastThresholdMs = 600 } = {}) {
 }
 
 /**
- * Wrap your existing input/textarea with this. It measures the wrapped
- * element's position and renders the popups/counter through a portal into
- * document.body — completely outside your form's DOM tree, so none of your
- * form/textarea CSS (fonts, borders, overflow clipping, etc.) can reach it.
+ * Renders everything INSIDE the wrapped element's own box — no portal, no
+ * fixed positioning. The wrapper is `position: relative; overflow: hidden`
+ * so popups/counter/ultimate are clipped to exactly this container (e.g.
+ * the TV screen), not the whole viewport.
  */
-export function ComboOverlay({ popups, hitCount, tier, counterVisible, shake, ultimate, children }) {
-  const anchorRef = useRef(null);
-  const [rect, setRect] = useState(null);
-
-  useLayoutEffect(() => {
-    function updateRect() {
-      if (anchorRef.current) {
-        setRect(anchorRef.current.getBoundingClientRect());
-      }
-    }
-    updateRect();
-    window.addEventListener("resize", updateRect);
-    window.addEventListener("scroll", updateRect, true);
-    return () => {
-      window.removeEventListener("resize", updateRect);
-      window.removeEventListener("scroll", updateRect, true);
-    };
-    // re-measure whenever popups/counter change too, in case layout shifted
-  }, [popups, counterVisible]);
-
-  // base style every popup/counter element starts from, so nothing can be
-  // inherited from surrounding page CSS (fonts, spacing, alignment, etc.)
+export function ComboOverlay({ popups, hitCount, tier, counterVisible, shake, ultimate, children, className = "" }) {
   const resetStyle = {
     all: "initial",
     boxSizing: "border-box",
-    fontFamily: "'Courier New', monospace",
-    fontWeight: 700,
+    fontWeight: 900,
     textAlign: "center",
     lineHeight: 1.2,
-    letterSpacing: "normal",
     pointerEvents: "none",
-    zIndex: 2147483000,
+    zIndex: 500,
   };
 
-  const centerX = rect ? rect.left + rect.width / 2 : 0;
   const isMutedUltimate = ultimate?.tone === "muted";
 
   return (
-    <>
+    <div
+      className={className}
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        transform: `translate(${shake.x}px, ${shake.y}px)`,
+        transition: "transform 0.06s",
+      }}
+    >
+      <style>{`
+        @keyframes comboNeonFlicker {
+          0%, 100% { opacity: 1; }
+          92% { opacity: 1; }
+          93% { opacity: 0.4; }
+          94% { opacity: 1; }
+          96% { opacity: 0.6; }
+          97% { opacity: 1; }
+        }
+      `}</style>
+
+      {children}
+
+      {ultimate && (
+        <>
+          <div
+            style={{
+              ...resetStyle,
+              position: "absolute",
+              inset: 0,
+              background: isMutedUltimate
+                ? "#1a1a2e"
+                : "radial-gradient(ellipse at center, rgba(255,0,153,0.25), rgba(0,0,0,0.9))",
+              opacity: ultimate.phase === "in" ? (isMutedUltimate ? 0.75 : 0.9) : 0,
+              transition: ultimate.phase === "in" ? "opacity 0.08s ease-out" : "opacity 0.5s ease-out",
+              zIndex: 600,
+            }}
+          />
+          <div
+            style={{
+              ...resetStyle,
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              fontFamily: "'Arial Black', Impact, sans-serif",
+              fontStyle: "italic",
+              textTransform: "uppercase",
+              letterSpacing: "4px",
+              fontSize: "clamp(24px, 7vw, 64px)",
+              color: isMutedUltimate ? "#8a8fa3" : "#fff",
+              textShadow: isMutedUltimate
+                ? ["0 0 6px #fff", "0 0 16px #6b7280", "0 0 32px #4b5563", "3px 3px 0 rgba(0,0,0,0.7)"].join(", ")
+                : ["0 0 6px #fff", "0 0 16px #ff2fd6", "0 0 32px #ff2fd6", "0 0 64px #00e5ff", "0 0 90px #00e5ff", "3px 3px 0 rgba(0,0,0,0.8)"].join(", "),
+              whiteSpace: "nowrap",
+              opacity: ultimate.phase === "in" ? 1 : 0,
+              transform: `translate(-50%, -50%) scale(${ultimate.phase === "in" ? 1 : 1.4}) rotate(-2deg)`,
+              transition:
+                ultimate.phase === "in"
+                  ? "transform 0.35s cubic-bezier(.17,2.2,.3,1), opacity 0.1s ease-out"
+                  : "transform 0.4s ease-in, opacity 0.4s ease-in",
+              zIndex: 600,
+            }}
+          >
+            {ultimate.text}
+          </div>
+        </>
+      )}
+
+      {/* HIT COUNTER — top of the TV screen */}
       <div
-        ref={anchorRef}
         style={{
-          transform: `translate(${shake.x}px, ${shake.y}px)`,
-          transition: "transform 0.06s",
+          ...resetStyle,
+          position: "absolute",
+          left: "50%",
+          top: "10px",
+          transform: `translateX(-50%) scale(${counterVisible ? 1 : 0.5})`,
+          opacity: counterVisible ? 1 : 0,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "4px 14px",
+          background: "rgba(4, 14, 20, 0.72)",
+          border: `2px solid ${tier.glow}`,
+          borderRadius: "4px",
+          boxShadow: `0 0 10px ${tier.glow}, 0 0 24px ${tier.glow}66, inset 0 0 12px rgba(0,0,0,0.6)`,
+          transition: "transform 0.18s cubic-bezier(.34,1.9,.4,1), opacity 0.15s ease-out",
+          zIndex: 550,
         }}
       >
-        {children}
+        <span style={{ fontFamily: "'Courier New', monospace", fontWeight: 700, fontSize: 11, letterSpacing: "2px", color: tier.color, opacity: 0.85, textShadow: `0 0 6px ${tier.glow}` }}>
+          COMBO
+        </span>
+        <span
+          style={{
+            fontFamily: "'Courier New', monospace",
+            fontWeight: 700,
+            fontSize: 20 + tier.scale * 6,
+            color: tier.color,
+            textShadow: `0 0 4px #fff, 0 0 12px ${tier.glow}, 0 0 26px ${tier.glow}`,
+            fontVariantNumeric: "tabular-nums",
+            animation: counterVisible ? "comboNeonFlicker 2.2s linear infinite" : "none",
+          }}
+        >
+          {String(hitCount).padStart(2, "0")}
+        </span>
+        <span style={{ fontFamily: "'Courier New', monospace", fontWeight: 700, fontSize: 11, letterSpacing: "1px", color: tier.color, opacity: 0.7 }}>
+          X
+        </span>
       </div>
 
-      {rect &&
-        createPortal(
-          <>
-            {ultimate && (
-              <>
-                <div
-                  style={{
-                    ...resetStyle,
-                    position: "fixed",
-                    inset: 0,
-                    background: isMutedUltimate ? "#4b5563" : "#fff",
-                    opacity: ultimate.phase === "in" ? (isMutedUltimate ? 0.72 : 0.85) : 0,
-                    transition: ultimate.phase === "in" ? "opacity 0.08s ease-out" : "opacity 0.5s ease-out",
-                  }}
-                />
-                <div
-                  style={{
-                    ...resetStyle,
-                    position: "fixed",
-                    left: "50%",
-                    top: "50%",
-                    fontFamily: "'Arial Black', Impact, sans-serif",
-                    fontStyle: "italic",
-                    textTransform: "uppercase",
-                    letterSpacing: "2px",
-                    fontSize: "clamp(32px, 8vw, 96px)",
-                    color: isMutedUltimate ? "#e5e7eb" : "#D63A3A",
-                    textShadow: isMutedUltimate
-                      ? [
-                        "4px 4px 0 #111827",
-                        "-3px -3px 0 #111827",
-                        "3px -3px 0 #111827",
-                        "-3px 3px 0 #111827",
-                        "0 0 28px rgba(17,24,39,0.6)",
-                      ].join(", ")
-                      : [
-                        "4px 4px 0 #000",
-                        "-3px -3px 0 #000",
-                        "3px -3px 0 #000",
-                        "-3px 3px 0 #000",
-                        "0 0 40px rgba(0,0,0,0.6)",
-                      ].join(", "),
-                    whiteSpace: "nowrap",
-                    opacity: ultimate.phase === "in" ? 1 : 0,
-                    transform: `translate(-50%, -50%) scale(${ultimate.phase === "in" ? 1 : 1.4}) rotate(${ultimate.phase === "in" ? "-2deg" : "-2deg"
-                      })`,
-                    transition:
-                      ultimate.phase === "in"
-                        ? "transform 0.35s cubic-bezier(.17,2.2,.3,1), opacity 0.1s ease-out"
-                        : "transform 0.4s ease-in, opacity 0.4s ease-in",
-                  }}
-                >
-                  {ultimate.text}
-                </div>
-              </>
-            )}
-
-            <div
-              style={{
-                ...resetStyle,
-                position: "fixed",
-                left: "50%",
-                top: 24,
-                fontFamily: "'Arial Black', Impact, sans-serif",
-                transform: `translateX(-50%) scale(${counterVisible ? 1 : 0.4})`,
-                fontSize: 34 + tier.scale * 14,
-                fontStyle: "italic",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-                color: tier.color,
-                textShadow: [
-                  "3px 3px 0 #000",
-                  "-2px -2px 0 #000",
-                  "2px -2px 0 #000",
-                  "-2px 2px 0 #000",
-                  "0 0 18px rgba(0,0,0,0.5)",
-                  "8px 8px 0 rgba(0,0,0,0.25)",
-                ].join(", "),
-                opacity: counterVisible ? 1 : 0,
-                whiteSpace: "nowrap",
-                transition: "transform 0.18s cubic-bezier(.34,1.9,.4,1), opacity 0.15s ease-out, font-size 0.18s cubic-bezier(.34,1.9,.4,1)",
-              }}
-            >
-              {hitCount} HIT!
-            </div>
-
-            {popups.map((p) => (
-              <div
-                key={p.id}
-                style={{
-                  ...resetStyle,
-                  position: "fixed",
-                  left: centerX + p.xOffset,
-                  top: p.phase === "out" ? rect.top - 140 : rect.top - 50 + p.yOffset,
-                  fontSize: p.fontSize,
-                  color: p.color,
-                  whiteSpace: "nowrap",
-                  opacity: p.phase === "out" ? 0 : 1,
-                  transform: `translate(-50%, -50%) rotate(${p.rotate}deg) scale(${p.phase === "out" ? p.scale * 0.85 : p.scale
-                    })`,
-                  transition: "transform 0.16s cubic-bezier(.2,1.6,.4,1), opacity 0.35s ease-out, top 0.9s ease-in",
-                }}
-              >
-                {p.text}
-              </div>
-            ))}
-          </>,
-          document.body
-        )}
-    </>
+      {/* POPUP WORDS — confined to this screen, positioned as % of its box */}
+      {popups.map((p) => (
+        <div
+          key={p.id}
+          style={{
+            ...resetStyle,
+            position: "absolute",
+            left: `calc(50% + ${p.xOffset}%)`,
+            bottom: `calc(30% + ${p.yOffset}%)`,
+            fontFamily: "'Arial Black', Impact, sans-serif",
+            fontStyle: "italic",
+            textTransform: "uppercase",
+            letterSpacing: p.isSpecial ? "3px" : "1px",
+            fontSize: p.fontSize,
+            color: p.color,
+            textShadow: [
+              `0 0 8px ${p.glow}`,
+              `0 0 20px ${p.glow}`,
+              `0 0 ${p.isSpecial ? 50 : 34}px ${p.glow}`,
+              "3px 3px 0 rgba(0,0,0,0.65)",
+            ].join(", "),
+            whiteSpace: "nowrap",
+            opacity: p.phase === "out" ? 0 : 1,
+            transform: `translate(-50%, 50%) rotate(${p.rotate}deg) scale(${p.phase === "out" ? p.scale * 0.85 : p.scale})`,
+            transition: "transform 0.16s cubic-bezier(.2,1.6,.4,1), opacity 0.35s ease-out",
+            zIndex: 550,
+          }}
+        >
+          {p.text}
+        </div>
+      ))}
+    </div>
   );
 }
