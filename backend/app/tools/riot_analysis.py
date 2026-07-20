@@ -13,7 +13,7 @@ llm = ChatGoogleGenerativeAI(
     model=settings.LLM_MODEL,
 )
 
-def analyze_lol_query(question: str) -> str:
+def analyze_lol_query_stream(question: str) -> str:
     raw_matches = get_recent_matches()
 
     prompt = f"""You are analyzing a League of Legends player's recent match history.
@@ -32,5 +32,5 @@ def analyze_lol_query(question: str) -> str:
                 Question: {question}
                 """
 
-    response = llm.invoke(prompt)
-    return response.content
+    for chunk in llm.stream(prompt):
+        yield chunk.content

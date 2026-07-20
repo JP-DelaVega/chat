@@ -7,7 +7,7 @@ from app.rag.chain import rag_chain
 from app.router import is_lol_query
 import os
 import requests
-from app.tools.riot_analysis import analyze_lol_query
+from app.tools.riot_analysis import analyze_lol_query_stream
 
 from dotenv import load_dotenv
 
@@ -35,7 +35,7 @@ def ask_stream(request: QueryRequest):
 
     if is_lol_query(request.question) and request.db_name == "lol_stats":
         try:
-            result = analyze_lol_query(request.question)
+            result = analyze_lol_query_stream(request.question)
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code
             if status == 429:
@@ -48,7 +48,8 @@ def ask_stream(request: QueryRequest):
             raise HTTPException(status_code=500, detail=f"Unexpected error fetching match data: {str(e)}")
 
         def generate_riot():
-            yield result
+            for chunk in analyze_lol_query_stream(request.question):
+                yield chunk
 
         return StreamingResponse(generate_riot(), media_type="text/plain")
 
