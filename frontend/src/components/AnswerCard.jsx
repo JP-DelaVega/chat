@@ -35,7 +35,7 @@ export default function AnswerCard({ role = "assistant", content = "", isLoading
         {/* Content Area */}
         <div className="p-2 font-mono text-sm text-black">
           <div className="flex items-start gap-2">
-            <span className="font-bold relative inline-flex w-5 h-5 items-center justify-center">
+            <span className="font-bold relative inline-flex w-5 h-5 items-center justify-center shrink-0">
               {isUser ? (
                 <>
                   <span
