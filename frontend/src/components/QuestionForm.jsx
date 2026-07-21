@@ -47,7 +47,7 @@ export default function QuestionForm({
       }}
       className="relative"
     >
-      <div className="bg-gradient-to-b from-[#3a3a3a] to-[#1f1f1f] border-4 border-t-zinc-500 border-l-zinc-500 border-r-black border-b-black p-10 shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] rounded-2xl relative overflow-hidden">
+      <div className="bg-linear-to-b from-[#3a3a3a] to-[#1f1f1f] border-4 border-t-zinc-500 border-l-zinc-500 border-r-black border-b-black p-10 shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] rounded-2xl relative overflow-hidden">
 
         {/* Brushed metal texture lines */}
         <div className="pointer-events-none absolute inset-0 opacity-10 bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.15)_0px,transparent_1px,transparent_3px)]" />

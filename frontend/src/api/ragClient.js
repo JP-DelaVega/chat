@@ -23,12 +23,17 @@ export class RagApiError extends Error {
 export async function askStream(
   question,
   dbName,
+  history,
   { signal, onChunk, onFirstChunk } = {},
 ) {
   const res = await fetch(`${API_BASE_URL}/ask/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question, db_name: dbName }),
+    body: JSON.stringify({
+      question,
+      db_name: dbName,
+      history: history.map((m) => ({ role: m.role, content: m.content })),
+    }),
 
     signal,
   });

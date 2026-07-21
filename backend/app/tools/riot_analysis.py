@@ -1,6 +1,7 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from app.config import settings
 from app.tools.riot_tool import get_recent_matches
+from app.utils.utils import format_history
 
 import os
 from dotenv import load_dotenv
@@ -13,13 +14,17 @@ llm = ChatGoogleGenerativeAI(
     model=settings.LLM_MODEL,
 )
 
-def analyze_lol_query_stream(question: str):
+def analyze_lol_query_stream(question: str, history: list = None):
     raw_matches = get_recent_matches()
+    history_text = format_history(history or [])
 
     prompt = f"""You are analyzing a League of Legends player's recent match history.
 
                 Match data (most recent matches, one per line):
                 {raw_matches}
+                
+                {"Conversation so far:" if history_text else ""}
+                {history_text}
 
                 Answer the following question using only the data above.
 

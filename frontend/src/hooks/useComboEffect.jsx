@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 
-const WORDS = ["HIT!", "COMBO!", "CRITICAL!", "RAPID!", "FIERCE!", "SMASH!", "MEGA!", "ULTRA!"];
-const SPECIALS = ["HADOUKEN!", "SHORYUKEN!", "TATSUMAKI!", "PERFECT!"];
+const WORDS = ["HIT!", "COMBO!", "PEW!", "SLASH!", "SPLAT!", "SMASH!", "ZAP!", "POW!"];
+const SPECIALS = ["HADOUKEN!", "HEADSHOT!", "KABOOM!", "PERFECT!"];
 
 const TIERS = [
   { min: 0,  color: "#4DF0FF", glow: "#00C2FF", baseSize: 18, scale: 1.0 },

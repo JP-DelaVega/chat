@@ -28,7 +28,7 @@ export function useRagQuery() {
     abortRef.current?.abort();
   }, []);
 
-  const submit = useCallback(async (question, dbName) => {
+  const submit = useCallback(async (question, dbName, history) => {
     const trimmed = question.trim();
     if (!trimmed) return;
 
@@ -44,7 +44,7 @@ export function useRagQuery() {
     }, AMBIENT_PHASE_DELAY_MS);
 
     try {
-      await askStream(trimmed, dbName, {
+      await askStream(trimmed, dbName, history, {
         signal: controller.signal,
         onFirstChunk: () => {
           clearTimeout(phaseTimerRef.current);

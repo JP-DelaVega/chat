@@ -4,9 +4,13 @@ from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from app.rag.vectorStore import get_vectorstore
 from app.config import settings
+from app.utils.utils import format_history
 
 TEMPLATE = """Answer the question based only on the following context:
 {context}
+
+Conversation so far:
+{history}
 
 Question: {question}
 """
@@ -40,6 +44,7 @@ def build_rag_chain():
     retrieve = {
         "context": RunnableLambda(retrieve_context),
         "question": lambda inputs: inputs["question"],
+        "history": lambda inputs: format_history(inputs.get("history", []))
     }
    
 

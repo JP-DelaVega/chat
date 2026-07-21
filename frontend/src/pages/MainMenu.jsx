@@ -11,14 +11,14 @@ export default function MainMenu() {
     { label: "START RAG SYSTEM", action: () => navigate("/homepage"), icon: "/icon.png" },
     { label: "ACCESS RESUME", action: () => navigate("/resume"), icon: "/file.png" },
     { label: "LINKEDIN LINK", action: () => window.open("https://www.linkedin.com/in/john-philip-dela-vega-29b51820a/", "_blank"), icon: "/linkedin.png" },
-    { label: "GITHUB LINK", action: () => window.open("https://github.com/JP-DelaVega", "_blank"), icon:"/github.png" },
-    { label: "LOGOUT", action: () => signOut(), isDanger: true, icon: null, customIcon: "<" },
+    { label: "GITHUB LINK", action: () => window.open("https://github.com/JP-DelaVega", "_blank"), icon: "/github.png" },
+    { label: "LOGOUT", action: () => signOut(), isDanger: true, icon: null, customIcon: "⏻" },
   ];
 
   return (
-    <div className="flex h-screen w-full items-center justify-center p-6 [font-family:'Courier_New',monospace]">
-      <div className="w-full max-w-sm border-2 border-black/30 shadow-[3px_0_10px_rgba(0,0,0,0.2)] bg-[#d9d5c7] p-3">
-        <div className="flex flex-col gap-1">
+    <div className="flex h-screen w-full items-center justify-center p-6 font-['Courier_New',monospace]">
+      <div className="w-full max-w-sm border-2 border-black/30 bg-[#d9d5c7] p-4 shadow-[3px_3px_10px_rgba(0,0,0,0.2),inset_1px_1px_2px_rgba(255,255,255,0.3)]">
+        <div className="flex flex-col gap-2">
           {menuItems.map((item, idx) => {
             const isHovered = hoveredIndex === idx;
 
@@ -29,31 +29,34 @@ export default function MainMenu() {
                 onMouseLeave={() => setHoveredIndex(null)}
                 onClick={item.action}
                 className={`
-                  flex items-center gap-3 px-4 py-3 text-left text-sm font-bold uppercase tracking-widest cursor-pointer
-                  border-2 border-black/25 shadow-[inset_1px_1px_2px_rgba(0,0,0,0.1)] 
+                  group flex items-center gap-3 border-2 px-4 py-3 text-left text-sm font-bold uppercase tracking-widest cursor-pointer transition-all duration-150
                   ${isHovered
                     ? item.isDanger
-                      ? "bg-red-600 text-white"
-                      : "bg-blue-900 text-white"
-                    : "bg-[#d9d5c7] text-black"
+                      ? "border-black/40 bg-[#c44] text-white shadow-[inset_1px_1px_3px_rgba(0,0,0,0.3)]"
+                      : "border-black/40 bg-[#2a3a5a] text-white shadow-[inset_1px_1px_3px_rgba(0,0,0,0.3)]"
+                    : "border-black/20 bg-[#e8e4d8] text-black/70 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.5),inset_-1px_-1px_2px_rgba(0,0,0,0.05)] hover:border-black/30"
                   }
                 `}
               >
-                {/* Image Icon */}
                 {item.icon && (
                   <img 
                     src={item.icon} 
                     alt={item.label} 
-                    className={`w-5 h-5 object-contain z-99`} 
+                    className={`w-5 h-5 object-contain transition-all duration-150 ${isHovered ? "brightness-0 invert" : ""}`} 
                   />
                 )}
                 
-                {/* Text Icon (The <- for logout) */}
                 {item.customIcon && (
-                  <span className="w-5 flex items-center justify-center">{item.customIcon}</span>
+                  <span className={`w-5 flex items-center justify-center text-sm transition-colors duration-150 ${isHovered ? "text-white" : "text-black/40"}`}>
+                    {item.customIcon}
+                  </span>
                 )}
 
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+
+                <span className={`text-xs transition-all duration-150 ${isHovered ? "opacity-100" : "opacity-0"}`}>
+                  &gt;
+                </span>
               </button>
             );
           })}

@@ -35,7 +35,7 @@ def ask_stream(request: QueryRequest):
 
     if is_lol_query(request.question) and request.db_name == "lol_stats":
         try:
-            result = analyze_lol_query_stream(request.question)
+            result = analyze_lol_query_stream(request.question, request.history)
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code
             if status == 429:

@@ -52,10 +52,11 @@ export default function HomePage() {
       errorMsg: "",
     };
 
+    const cleanHistory = messages.filter((m) => !m.isLoading && m.content);
     assistantMessageIdRef.current = assistantMessage.id;
     setMessages((prev) => [...prev, userMessage, assistantMessage]);
     setQuestion("");
-    submit(trimmedQuestion, currentDb);
+    submit(trimmedQuestion, currentDb, cleanHistory);
   };
 
   useEffect(() => {
@@ -249,7 +250,7 @@ export default function HomePage() {
 
               <div className="flex flex-wrap items-center gap-6">
                 <div className="flex items-center gap-3">
-                  <div className={`${style.checkboxwrapper25} flex items-center h-[18px]`}>
+                  <div className={`${style.checkboxwrapper25} flex items-center h-4.5`}>
                     <input type="checkbox" onChange={() => setIsDarkMode(prev => !prev)} />
                   </div>
                   <div className="text-[10px]  font-black tracking-wider text-black/40">
@@ -261,16 +262,16 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={() => setAnimationsEnabled((prev) => !prev)}
-                    className="group flex h-[22px] items-center gap-2 border-2 border-t-white border-l-white border-b-black border-r-black bg-[#c0c0c0] px-2 text-[10px] font-black uppercase tracking-wider text-black transition-all hover:bg-[#d4d4d4] active:border-t-black active:border-l-black active:border-b-white active:border-r-white"
+                    className="group relative flex h-5.5 items-center justify-center gap-2 border-2 border-t-white border-l-white border-b-black/40 border-r-black/40 bg-[#c8c4b6] px-3 text-[9px] font-black uppercase tracking-widest text-black/70 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.6),inset_-1px_-1px_2px_rgba(0,0,0,0.1),1px_1px_2px_rgba(0,0,0,0.15)] transition-all duration-150 hover:bg-[#d4d0c2] active:translate-y-px active:border-t-black/40 active:border-l-black/40 active:border-b-white active:border-r-white active:shadow-[inset_1px_1px_3px_rgba(0,0,0,0.2)]"
                   >
-                    <span>BATTLE MODE</span>
-                    <span className={`h-2 w-2 rounded-full border border-black transition-all duration-200 ${animationsEnabled ? "bg-[#5ebf72] shadow-[0_0_4px_#5ebf72]" : "bg-black/20"}`} />
+                    <span>GAME MODE</span>
+                    <span className={`h-2 w-2 rounded-full border border-black/30 transition-all duration-200 ${animationsEnabled ? "bg-[#5ebf72] shadow-[0_0_4px_#5ebf72]" : "bg-black/15"}`} />
                   </button>
 
                   <button
                     type="button"
                     onClick={toggleModal}
-                    className="group flex h-[25px] items-center gap-2 border-2 border-t-red-300 border-l-red-300 border-b-black border-r-black bg-[#f66] px-2 text-[10px] font-black uppercase tracking-wider text-white transition-all hover:bg-[#f84b4b] active:border-t-black active:border-l-black active:border-b-red-300 active:border-r-red-300"
+                    className="group relative flex h-5.5 items-center justify-center gap-2 border-2 border-t-red-300 border-l-red-300 border-b-black/50 border-r-black/50 bg-[#c44] px-3 text-[9px] font-black uppercase tracking-widest text-white shadow-[inset_1px_1px_2px_rgba(255,255,255,0.3),inset_-1px_-1px_2px_rgba(0,0,0,0.2),1px_1px_2px_rgba(0,0,0,0.2)] transition-all duration-150 hover:bg-[#d95555] active:translate-y-px active:border-t-black/50 active:border-l-black/50 active:border-b-red-300 active:border-r-red-300 active:shadow-[inset_1px_1px_3px_rgba(0,0,0,0.3)]"
                   >
                     <span>RESTART</span>
                   </button>
